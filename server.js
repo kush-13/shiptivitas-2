@@ -130,7 +130,6 @@ app.put('/api/v1/clients/:id', (req, res) => {
 
   console.log(priority, status)
   const getPriorStat =  priority&&db.prepare("select * from clients where id != ? and priority = ? and status = ?").get(id, priority, status||client.status);
-  console.log("getPriorStat", getPriorStat);
   
   if (getPriorStat){
     // a person with that priority in final status exists already  
@@ -139,8 +138,7 @@ app.put('/api/v1/clients/:id', (req, res) => {
 
   if ((status && status != client.status) || (priority && client.priority !== priority)){
         // update client's info in the data Base
-        const info = db.prepare('update clients set status = ?, priority = ? where id = ? ').run(status||client.status, priority||client.priority, id);  
-        console.log(info)
+        db.prepare('update clients set status = ?, priority = ? where id = ? ').run(status||client.status, priority||client.priority, id);  
     }
 
   return res.status(200).send(clients);
