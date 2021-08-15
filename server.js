@@ -4,6 +4,7 @@ import Database from 'better-sqlite3';
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
 app.get('/', (req, res) => {
   return res.status(200).send({'message': 'SHIPTIVITY API. Read documentation to see API docs'});
@@ -127,7 +128,19 @@ app.put('/api/v1/clients/:id', (req, res) => {
 
   /* ---------- Update code below ----------*/
 
-
+  console.log(priority, status)
+  const getPriorStat =  priority&&db.prepare("select * from clients where id != ? and priority = ? and status = ?").get(id, priority, status&&client.status);
+  console.log("getPriorStat", getPriorStat);
+  
+  if (getPriorStat){
+    // a person with that priority in final status exists already  
+    return res.status(400).send({message: "can't modify client's priority to "+priority.toString()});
+  }
+  
+  if ((status && status != client.status) || (priority && client.priority !== priority)){
+        // update client's info in the data Base
+        db.prepare('update clients set status = ?, priority = ? where id = ? ').run(status&&client.status, priority&&client.priority, id);  
+    }
 
   return res.status(200).send(clients);
 });
