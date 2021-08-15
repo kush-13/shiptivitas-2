@@ -128,7 +128,6 @@ app.put('/api/v1/clients/:id', (req, res) => {
 
   /* ---------- Update code below ----------*/
 
-  console.log(priority, status)
   const getPriorStat =  priority&&db.prepare("select * from clients where id != ? and priority = ? and status = ?").get(id, priority, status||client.status);
   
   if (getPriorStat){
